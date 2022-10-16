@@ -1,6 +1,4 @@
-" Fisa-vim-config, a config for both Vim and NeoVim
-" http://vim.fisadev.com
-" version: 12.0.1
+" fisadev nvim config whith small changes.
 
 " To use fancy symbols wherever possible, change this setting from 0 to 1
 " and use a font from https://github.com/ryanoasis/nerd-fonts in your terminal 
@@ -24,7 +22,7 @@ else
     let vim_plug_path = expand('~/.vim/autoload/plug.vim')
 endif
 if !filereadable(vim_plug_path)
-    echo "Installing Vim-plug..."
+   echo "Installing Vim-plug..."
     echo ""
     if using_neovim
         silent !mkdir -p ~/.config/nvim/autoload
@@ -71,16 +69,13 @@ Plug 'majutsushi/tagbar'
 " Search results counter
 Plug 'vim-scripts/IndexedSearch'
 " A couple of nice colorschemes
-Plug 'patstockwell/vim-monokai-tasty'
-Plug 'joshdick/onedark.vim'
+Plug 'sainnhe/sonokai'
 " Airline
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 " Code and files fuzzy finder
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-" Pending tasks list
-Plug 'fisadev/FixedTaskList.vim'
 " Async autocompletion
 if using_neovim && vim_plug_just_installed
     Plug 'Shougo/deoplete.nvim', {'do': ':autocmd VimEnter * UpdateRemotePlugins'}
@@ -110,8 +105,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mileszs/ack.vim'
 " Paint css colors with the real color
 Plug 'lilydjwg/colorizer'
-" Window chooser
-Plug 't9md/vim-choosewin'
 " Automatically sort python imports
 Plug 'fisadev/vim-isort'
 " Highlight matching html tags
@@ -125,7 +118,7 @@ Plug 'mhinz/vim-signify'
 " Yank history navigation
 Plug 'vim-scripts/YankRing.vim'
 " Linters
-Plug 'neomake/neomake'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Relative numbering of lines (0 is the current line)
 " (disabled by default because is very intrusive and can't be easily toggled
 " on/off. When the plugin is present, will always activate the relative
@@ -207,7 +200,7 @@ set expandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
-
+set undolevels=99999
 " show line numbers
 set nu
 
@@ -219,8 +212,13 @@ if has('gui_running') || using_neovim || (&term =~? 'mlterm\|xterm\|xterm-256\|s
     if !has('gui_running')
         let &t_Co = 256
     endif
-    " colorscheme vim-monokai-tasty
-    colorscheme onedark
+    if has('termguicolors')
+        set termguicolors
+    endif
+    " The configuration options should be placed before `colorscheme sonokai`.
+    let g:sonokai_style = 'default'
+    let g:sonokai_better_performance = 1
+    colorscheme sonokai
 else
     colorscheme delek
 endif
@@ -314,18 +312,8 @@ map <F2> :TaskList<CR>
 " Neomake ------------------------------
 
 " Run linter on write
-autocmd! BufWritePost * Neomake
+"autocmd! BufWritePost * Neomake
 
-" Check code as python3 by default
-let g:neomake_python_python_maker = neomake#makers#ft#python#python()
-let g:neomake_python_flake8_maker = neomake#makers#ft#python#flake8()
-let g:neomake_python_python_maker.exe = 'python3 -m py_compile'
-let g:neomake_python_flake8_maker.exe = 'python3 -m flake8'
-let g:neomake_python_enabled_makers = ['pylint']
-call neomake#configure#automake('nrwi', 500)
-
-" Disable error messages inside the buffer, next to the problematic line
-let g:neomake_virtualtext_current_error = 0
 
 " Fzf ------------------------------
 
@@ -383,12 +371,6 @@ nmap ,D :tab split<CR>:call jedi#goto()<CR>
 nmap ,r :Ack 
 nmap ,wr :execute ":Ack " . expand('<cword>')<CR>
 
-" Window Chooser ------------------------------
-
-" mapping
-nmap  -  <Plug>(choosewin)
-" show big letters
-let g:choosewin_overlay_enable = 1
 
 " Signify ------------------------------
 
@@ -427,7 +409,7 @@ endif
 " Airline ------------------------------
 
 let g:airline_powerline_fonts = 1
-let g:airline_theme = 'bubblegum'
+let g:airline_theme = 'sonokai'   "'bubblegum'
 let g:airline#extensions#whitespace#enabled = 0
 
 " Fancy Symbols!!
